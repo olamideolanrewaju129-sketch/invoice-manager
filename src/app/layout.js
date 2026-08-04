@@ -38,6 +38,16 @@ export default function RootLayout({ children }) {
             <Link href="/clients" className="px-3 py-2.5 rounded-lg hover:bg-primary/10 hover:text-primary transition-colors duration-200 font-medium text-sm text-slate-600">Clients</Link>
             <Link href="/settings" className="px-3 py-2.5 rounded-lg hover:bg-primary/10 hover:text-primary transition-colors duration-200 font-medium text-sm text-slate-600">Settings</Link>
           </nav>
+          
+          <div className="mt-auto pt-6 border-t border-slate-200">
+            <h3 className="px-3 text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2">System</h3>
+            <nav className="flex flex-col gap-1.5">
+              <Link href="/health" className="px-3 py-2 rounded-lg hover:bg-slate-100 transition-colors duration-200 font-medium text-sm text-slate-500 flex items-center gap-2">
+                <span className="w-2 h-2 rounded-full bg-emerald-500"></span>
+                Health Check
+              </Link>
+            </nav>
+          </div>
         </aside>
         <main className="flex-1 p-8 md:p-12 overflow-y-auto max-w-7xl w-full">
           {children}
