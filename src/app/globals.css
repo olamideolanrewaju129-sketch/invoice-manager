@@ -10,8 +10,84 @@
   --font-mono: var(--font-geist-mono);
 }
 
+:root {
+  color-scheme: light;
+}
+
+html.dark {
+  color-scheme: dark;
+}
+
 body {
-  background: var(--color-background);
+  background: linear-gradient(180deg, #f8fafc 0%, #eef2ff 100%);
   color: var(--color-foreground);
   font-family: var(--font-sans);
+  transition: background 0.35s ease, color 0.35s ease;
+}
+
+html.dark body {
+  background: radial-gradient(circle at top, rgba(16, 185, 129, 0.08), transparent 25%),
+    radial-gradient(circle at 20% 10%, rgba(99, 102, 241, 0.1), transparent 18%),
+    linear-gradient(180deg, #070b18 0%, #090f1f 45%, #08101f 100%);
+  color: #e2e8f0;
+}
+
+html.dark .bg-white {
+  background-color: #111827 !important;
+}
+
+html.dark .bg-slate-50 {
+  background-color: #111827 !important;
+}
+
+html.dark .bg-slate-100 {
+  background-color: #111827 !important;
+}
+
+html.dark .border-slate-200 {
+  border-color: #334155 !important;
+}
+
+html.dark .text-slate-600 {
+  color: #cbd5e1 !important;
+}
+
+html.dark .text-slate-500 {
+  color: #cbd5e1 !important;
+}
+
+html.dark .text-slate-700 {
+  color: #e2e8f0 !important;
+}
+
+html.dark .shadow-slate-200\/50 {
+  box-shadow: 0 35px 100px rgba(15, 23, 42, 0.16) !important;
+}
+
+:focus-visible {
+  outline: 2px solid #0f766e;
+  outline-offset: 2px;
+}
+
+::selection {
+  background: rgba(4, 120, 87, 0.2);
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(16px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-fade-in-up {
+  animation: fadeInUp 0.55s ease-out both;
+}
+
+.card-glow {
+  box-shadow: 0 24px 80px rgba(15, 23, 42, 0.08);
 }

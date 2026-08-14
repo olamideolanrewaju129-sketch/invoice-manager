@@ -1,0 +1,515 @@
+﻿
+  node_modules\@anthropic-ai\sdk\resources\messages\messages.d.ts:1:import { 
+APIPromise } from "../../core/api-promise.js";
+  node_modules\@anthropic-ai\sdk\resources\messages\messages.d.ts:2:import { 
+APIResource } from "../../core/resource.js";
+  node_modules\@anthropic-ai\sdk\resources\messages\messages.d.ts:3:import { 
+Stream } from "../../core/streaming.js";
+  node_modules\@anthropic-ai\sdk\resources\messages\messages.d.ts:4:import { 
+RequestOptions } from "../../internal/request-options.js";
+  node_modules\@anthropic-ai\sdk\resources\messages\messages.d.ts:5:import { 
+MessageStream } from "../../lib/MessageStream.js";
+> node_modules\@anthropic-ai\sdk\resources\messages\messages.d.ts:6:import { 
+type ExtractParsedContentFromParams, type ParseableMessageCreateParams, type 
+ParsedMessage } from "../../lib/parser.js";
+  node_modules\@anthropic-ai\sdk\resources\messages\messages.d.ts:7:import * 
+as BatchesAPI from "./batches.js";
+  node_modules\@anthropic-ai\sdk\resources\messages\messages.d.ts:8:import { 
+BatchCreateParams, BatchListParams, Batches, DeletedMessageBatch, 
+MessageBatch, MessageBatchCanceledResult, MessageBatchErroredResult, 
+MessageBatchExpiredResult, MessageBatchIndividualResponse, 
+MessageBatchRequestCounts, MessageBatchResult, MessageBatchSucceededResult, 
+MessageBatchesPage } from "./batches.js";
+  node_modules\@anthropic-ai\sdk\resources\messages\messages.d.ts:9:import * 
+as MessagesAPI from "./messages.js";
+  node_modules\@anthropic-ai\sdk\resources\messages\messages.d.ts:10:export 
+declare class Messages extends APIResource {
+  node_modules\@anthropic-ai\sdk\resources\messages\messages.d.ts:11:    
+batches: BatchesAPI.Batches;
+  node_modules\@anthropic-ai\sdk\resources\messages\messages.d.ts:12:    /**
+  node_modules\@anthropic-ai\sdk\resources\messages\messages.d.ts:13:     * 
+Send a structured list of input messages with text and/or image content, and 
+the
+  node_modules\@anthropic-ai\sdk\resources\messages\messages.d.ts:14:     * 
+model will generate the next message in the conversation.
+  node_modules\@anthropic-ai\sdk\resources\messages\messages.d.ts:15:     *
+  node_modules\@anthropic-ai\sdk\resources\messages\messages.d.ts:16:     * 
+The Messages API can be used for either single queries or stateless multi-turn
+  node_modules\@anthropic-ai\sdk\resources\messages\messages.d.ts:26:     *   
+messages: [{ content: 'Hello, world', role: 'user' }],
+  node_modules\@anthropic-ai\sdk\resources\messages\messages.d.ts:27:     *   
+model: 'claude-opus-4-6',
+  node_modules\@anthropic-ai\sdk\resources\messages\messages.d.ts:28:     * });
+  node_modules\@anthropic-ai\sdk\resources\messages\messages.d.ts:29:     * ```
+  node_modules\@anthropic-ai\sdk\resources\messages\messages.d.ts:30:     */
+  node_modules\@anthropic-ai\sdk\resources\messages\messages.d.ts:31:    
+create(params: MessageCreateParamsNonStreaming, options?: RequestOptions): 
+APIPromise<Message>;
+  node_modules\@anthropic-ai\sdk\resources\messages\messages.d.ts:32:    
+create(params: MessageCreateParamsStreaming, options?: RequestOptions): 
+APIPromise<Stream<RawMessageStreamEvent>>;
+  node_modules\@anthropic-ai\sdk\resources\messages\messages.d.ts:33:    
+create(params: MessageCreateParamsBase, options?: RequestOptions): 
+APIPromise<Stream<RawMessageStreamEvent> | Message>;
+  node_modules\@anthropic-ai\sdk\resources\messages\messages.d.ts:34:    /**
+  node_modules\@anthropic-ai\sdk\resources\messages\messages.d.ts:35:     * 
+Send a structured list of input messages with text and/or image content, along 
+with an expected `output_config.format` and
+> node_modules\@anthropic-ai\sdk\resources\messages\messages.d.ts:36:     * 
+the response will be automatically parsed and available in the `parsed_output` 
+property of the message.
+  node_modules\@anthropic-ai\sdk\resources\messages\messages.d.ts:37:     *
+  node_modules\@anthropic-ai\sdk\resources\messages\messages.d.ts:38:     * 
+@example
+  node_modules\@anthropic-ai\sdk\resources\messages\messages.d.ts:39:     * 
+```ts
+  node_modules\@anthropic-ai\sdk\resources\messages\messages.d.ts:40:     * 
+const message = await client.messages.parse({
+  node_modules\@anthropic-ai\sdk\resources\messages\messages.d.ts:41:     *   
+model: 'claude-sonnet-4-5-20250929',
+  node_modules\@anthropic-ai\sdk\resources\messages\messages.d.ts:42:     *   
+max_tokens: 1024,
+  node_modules\@anthropic-ai\sdk\resources\messages\messages.d.ts:43:     *   
+messages: [{ role: 'user', content: 'What is 2+2?' }],
+  node_modules\@anthropic-ai\sdk\resources\messages\messages.d.ts:44:     *   
+output_config: {
+  node_modules\@anthropic-ai\sdk\resources\messages\messages.d.ts:45:     *    
+ format: zodOutputFormat(z.object({ answer: z.number() })),
+  node_modules\@anthropic-ai\sdk\resources\messages\messages.d.ts:46:     *   
+},
+  node_modules\@anthropic-ai\sdk\resources\messages\messages.d.ts:47:     * });
+  node_modules\@anthropic-ai\sdk\resources\messages\messages.d.ts:48:     *
+> node_modules\@anthropic-ai\sdk\resources\messages\messages.d.ts:49:     * 
+console.log(message.parsed_output?.answer); // 4
+  node_modules\@anthropic-ai\sdk\resources\messages\messages.d.ts:50:     * ```
+  node_modules\@anthropic-ai\sdk\resources\messages\messages.d.ts:51:     */
+  node_modules\@anthropic-ai\sdk\resources\messages\messages.d.ts:52:    
+parse<Params extends MessageCreateParamsNonStreaming>(params: Params, 
+options?: RequestOptions): 
+APIPromise<ParsedMessage<ExtractParsedContentFromParams<Params>>>;
+  node_modules\@anthropic-ai\sdk\resources\messages\messages.d.ts:53:    /**
+  node_modules\@anthropic-ai\sdk\resources\messages\messages.d.ts:54:     * 
+Create a Message stream.
+  node_modules\@anthropic-ai\sdk\resources\messages\messages.d.ts:55:     *
+  node_modules\@anthropic-ai\sdk\resources\messages\messages.d.ts:56:     * If 
+`output_config.format` is provided with a parseable format (like 
+`zodOutputFormat()`),
+> node_modules\@anthropic-ai\sdk\resources\messages\messages.d.ts:57:     * 
+the final message will include a `parsed_output` property with the parsed 
+content.
+  node_modules\@anthropic-ai\sdk\resources\messages\messages.d.ts:58:     *
+  node_modules\@anthropic-ai\sdk\resources\messages\messages.d.ts:59:     * 
+@example
+  node_modules\@anthropic-ai\sdk\resources\messages\messages.d.ts:60:     * 
+```ts
+  node_modules\@anthropic-ai\sdk\resources\messages\messages.d.ts:61:     * 
+const stream = client.messages.stream({
+  node_modules\@anthropic-ai\sdk\resources\messages\messages.d.ts:62:     *   
+model: 'claude-sonnet-4-5-20250929',
+  node_modules\@anthropic-ai\sdk\resources\messages\messages.d.ts:63:     *   
+max_tokens: 1024,
+  node_modules\@anthropic-ai\sdk\resources\messages\messages.d.ts:64:     *   
+messages: [{ role: 'user', content: 'What is 2+2?' }],
+  node_modules\@anthropic-ai\sdk\resources\messages\messages.d.ts:65:     *   
+output_config: {
+  node_modules\@anthropic-ai\sdk\resources\messages\messages.d.ts:66:     *    
+ format: zodOutputFormat(z.object({ answer: z.number() })),
+  node_modules\@anthropic-ai\sdk\resources\messages\messages.d.ts:67:     *   
+},
+  node_modules\@anthropic-ai\sdk\resources\messages\messages.d.ts:68:     * });
+  node_modules\@anthropic-ai\sdk\resources\messages\messages.d.ts:69:     *
+  node_modules\@anthropic-ai\sdk\resources\messages\messages.d.ts:70:     * 
+const message = await stream.finalMessage();
+> node_modules\@anthropic-ai\sdk\resources\messages\messages.d.ts:71:     * 
+console.log(message.parsed_output?.answer); // 4
+  node_modules\@anthropic-ai\sdk\resources\messages\messages.d.ts:72:     * ```
+  node_modules\@anthropic-ai\sdk\resources\messages\messages.d.ts:73:     */
+  node_modules\@anthropic-ai\sdk\resources\messages\messages.d.ts:74:    
+stream<Params extends MessageStreamParams>(body: Params, options?: 
+RequestOptions): MessageStream<ExtractParsedContentFromParams<Params>>;
+  node_modules\@anthropic-ai\sdk\resources\messages\messages.d.ts:75:    /**
+  node_modules\@anthropic-ai\sdk\resources\messages\messages.d.ts:76:     * 
+Count the number of tokens in a Message.
+  node_modules\@anthropic-ai\sdk\resources\messages\messages.d.ts:77:     *
+  node_modules\@anthropic-ai\sdk\resources\messages\messages.d.ts:78:     * 
+The Token Count API can be used to count the number of tokens in a Message,
+  node_modules\@anthropic-ai\sdk\resources\messages\messages.d.ts:79:     * 
+including tools, images, and documents, without creating it.
+  node_modules\@anthropic-ai\sdk\resources\messages\messages.d.ts:80:     *
+  node_modules\@anthropic-ai\sdk\resources\messages\messages.d.ts:81:     * 
+Learn more about token counting in our
+  node_modules\@anthropic-ai\sdk\resources\messages\messages.d.ts:612:    
+type: 'image';
+  node_modules\@anthropic-ai\sdk\resources\messages\messages.d.ts:613:    /**
+  node_modules\@anthropic-ai\sdk\resources\messages\messages.d.ts:614:     * 
+Create a cache control breakpoint at this content block.
+  node_modules\@anthropic-ai\sdk\resources\messages\messages.d.ts:615:     */
+  node_modules\@anthropic-ai\sdk\resources\messages\messages.d.ts:616:    
+cache_control?: CacheControlEphemeral | null;
+  node_modules\@anthropic-ai\sdk\resources\messages\messages.d.ts:617:}
+  node_modules\@anthropic-ai\sdk\resources\messages\messages.d.ts:618:export 
+interface InputJSONDelta {
+  node_modules\@anthropic-ai\sdk\resources\messages\messages.d.ts:619:    
+partial_json: string;
+  node_modules\@anthropic-ai\sdk\resources\messages\messages.d.ts:620:    
+type: 'input_json_delta';
+  node_modules\@anthropic-ai\sdk\resources\messages\messages.d.ts:621:}
+> node_modules\@anthropic-ai\sdk\resources\messages\messages.d.ts:622:export 
+interface JSONOutputFormat {
+  node_modules\@anthropic-ai\sdk\resources\messages\messages.d.ts:623:    /**
+  node_modules\@anthropic-ai\sdk\resources\messages\messages.d.ts:624:     * 
+The JSON schema of the format
+  node_modules\@anthropic-ai\sdk\resources\messages\messages.d.ts:625:     */
+  node_modules\@anthropic-ai\sdk\resources\messages\messages.d.ts:626:    
+schema: {
+  node_modules\@anthropic-ai\sdk\resources\messages\messages.d.ts:627:        
+[key: string]: unknown;
+  node_modules\@anthropic-ai\sdk\resources\messages\messages.d.ts:628:    };
+  node_modules\@anthropic-ai\sdk\resources\messages\messages.d.ts:629:    
+type: 'json_schema';
+  node_modules\@anthropic-ai\sdk\resources\messages\messages.d.ts:630:}
+  node_modules\@anthropic-ai\sdk\resources\messages\messages.d.ts:631:export 
+interface MemoryTool20250818 {
+  node_modules\@anthropic-ai\sdk\resources\messages\messages.d.ts:632:    /**
+  node_modules\@anthropic-ai\sdk\resources\messages\messages.d.ts:844:     */
+  node_modules\@anthropic-ai\sdk\resources\messages\messages.d.ts:845:    
+cache_control?: CacheControlEphemeral | null;
+  node_modules\@anthropic-ai\sdk\resources\messages\messages.d.ts:846:}
+  node_modules\@anthropic-ai\sdk\resources\messages\messages.d.ts:847:/**
+  node_modules\@anthropic-ai\sdk\resources\messages\messages.d.ts:848: * The 
+model that will complete your prompt.
+  node_modules\@anthropic-ai\sdk\resources\messages\messages.d.ts:849: *
+  node_modules\@anthropic-ai\sdk\resources\messages\messages.d.ts:850: * See 
+[models](https://docs.anthropic.com/en/docs/models-overview) for additional
+  node_modules\@anthropic-ai\sdk\resources\messages\messages.d.ts:851: * 
+details and options.
+  node_modules\@anthropic-ai\sdk\resources\messages\messages.d.ts:852: */
+  node_modules\@anthropic-ai\sdk\resources\messages\messages.d.ts:853:export 
+type Model = 'claude-sonnet-5' | 'claude-fable-5' | 'claude-mythos-5' | 
+'claude-opus-5' | 'claude-opus-4-8' | 'claude-opus-4-7' | 
+'claude-mythos-preview' | 'claude-opus-4-6' | 'claude-sonnet-4-6' | 
+'claude-haiku-4-5' | 'claude-haiku-4-5-20251001' | 'claude-opus-4-5' | 
+'claude-opus-4-5-20251101' | 'claude-sonnet-4-5' | 
+'claude-sonnet-4-5-20250929' | (string & {});
+> node_modules\@anthropic-ai\sdk\resources\messages\messages.d.ts:854:export 
+interface OutputConfig {
+  node_modules\@anthropic-ai\sdk\resources\messages\messages.d.ts:855:    /**
+  node_modules\@anthropic-ai\sdk\resources\messages\messages.d.ts:856:     * 
+All possible effort levels.
+  node_modules\@anthropic-ai\sdk\resources\messages\messages.d.ts:857:     */
+  node_modules\@anthropic-ai\sdk\resources\messages\messages.d.ts:858:    
+effort?: 'low' | 'medium' | 'high' | 'xhigh' | 'max' | null;
+  node_modules\@anthropic-ai\sdk\resources\messages\messages.d.ts:859:    /**
+  node_modules\@anthropic-ai\sdk\resources\messages\messages.d.ts:860:     * A 
+schema to specify Claude's output format in responses. See
+  node_modules\@anthropic-ai\sdk\resources\messages\messages.d.ts:861:     * 
+[structured outputs](https://platform.claude.com/docs/en/build-with-claude/stru
+ctured-outputs)
+  node_modules\@anthropic-ai\sdk\resources\messages\messages.d.ts:862:     */
+> node_modules\@anthropic-ai\sdk\resources\messages\messages.d.ts:863:    
+format?: JSONOutputFormat | null;
+  node_modules\@anthropic-ai\sdk\resources\messages\messages.d.ts:864:}
+  node_modules\@anthropic-ai\sdk\resources\messages\messages.d.ts:865:export 
+interface OutputTokensDetails {
+  node_modules\@anthropic-ai\sdk\resources\messages\messages.d.ts:866:    /**
+  node_modules\@anthropic-ai\sdk\resources\messages\messages.d.ts:867:     * 
+Number of output tokens the model generated as internal reasoning, including 
+the
+  node_modules\@anthropic-ai\sdk\resources\messages\messages.d.ts:868:     * 
+thinking-block delimiter tokens.
+  node_modules\@anthropic-ai\sdk\resources\messages\messages.d.ts:869:     *
+  node_modules\@anthropic-ai\sdk\resources\messages\messages.d.ts:870:     * 
+Reflects the raw reasoning the model produced, not the (possibly shorter)
+  node_modules\@anthropic-ai\sdk\resources\messages\messages.d.ts:871:     * 
+summarized thinking text returned in the response body. Computed by
+  node_modules\@anthropic-ai\sdk\resources\messages\messages.d.ts:872:     * 
+re-tokenizing the raw reasoning text, so it may differ from the model's exact
+  node_modules\@anthropic-ai\sdk\resources\messages\messages.d.ts:873:     * 
+generation count by a small number of tokens. Always ≤ `output_tokens`;
+  node_modules\@anthropic-ai\sdk\resources\messages\messages.d.ts:2250:     */
+  node_modules\@anthropic-ai\sdk\resources\messages\messages.d.ts:2251:    
+inference_geo?: string | null;
+  node_modules\@anthropic-ai\sdk\resources\messages\messages.d.ts:2252:    /**
+  node_modules\@anthropic-ai\sdk\resources\messages\messages.d.ts:2253:     * 
+Body param: An object describing metadata about the request.
+  node_modules\@anthropic-ai\sdk\resources\messages\messages.d.ts:2254:     */
+  node_modules\@anthropic-ai\sdk\resources\messages\messages.d.ts:2255:    
+metadata?: Metadata;
+  node_modules\@anthropic-ai\sdk\resources\messages\messages.d.ts:2256:    /**
+  node_modules\@anthropic-ai\sdk\resources\messages\messages.d.ts:2257:     * 
+Body param: Configuration options for the model's output, such as the output
+  node_modules\@anthropic-ai\sdk\resources\messages\messages.d.ts:2258:     * 
+format.
+  node_modules\@anthropic-ai\sdk\resources\messages\messages.d.ts:2259:     */
+> node_modules\@anthropic-ai\sdk\resources\messages\messages.d.ts:2260:    
+output_config?: OutputConfig;
+  node_modules\@anthropic-ai\sdk\resources\messages\messages.d.ts:2261:    /**
+  node_modules\@anthropic-ai\sdk\resources\messages\messages.d.ts:2262:     * 
+Body param: Determines whether to use priority capacity (if available) or
+  node_modules\@anthropic-ai\sdk\resources\messages\messages.d.ts:2263:     * 
+standard capacity for this request.
+  node_modules\@anthropic-ai\sdk\resources\messages\messages.d.ts:2264:     *
+  node_modules\@anthropic-ai\sdk\resources\messages\messages.d.ts:2265:     * 
+Anthropic offers different levels of service for your API requests. See
+  node_modules\@anthropic-ai\sdk\resources\messages\messages.d.ts:2266:     * 
+[service-tiers](https://platform.claude.com/docs/en/api/service-tiers) for
+  node_modules\@anthropic-ai\sdk\resources\messages\messages.d.ts:2267:     * 
+details.
+  node_modules\@anthropic-ai\sdk\resources\messages\messages.d.ts:2268:     */
+  node_modules\@anthropic-ai\sdk\resources\messages\messages.d.ts:2269:    
+service_tier?: 'auto' | 'standard_only';
+  node_modules\@anthropic-ai\sdk\resources\messages\messages.d.ts:2270:    /**
+  node_modules\@anthropic-ai\sdk\resources\messages\messages.d.ts:2433:export 
+interface MessageCreateParamsStreaming extends MessageCreateParamsBase {
+  node_modules\@anthropic-ai\sdk\resources\messages\messages.d.ts:2434:    /**
+  node_modules\@anthropic-ai\sdk\resources\messages\messages.d.ts:2435:     * 
+Body param: Whether to incrementally stream the response using server-sent
+  node_modules\@anthropic-ai\sdk\resources\messages\messages.d.ts:2436:     * 
+events.
+  node_modules\@anthropic-ai\sdk\resources\messages\messages.d.ts:2437:     *
+  node_modules\@anthropic-ai\sdk\resources\messages\messages.d.ts:2438:     * 
+See 
+[streaming](https://platform.claude.com/docs/en/build-with-claude/streaming)
+  node_modules\@anthropic-ai\sdk\resources\messages\messages.d.ts:2439:     * 
+for details.
+  node_modules\@anthropic-ai\sdk\resources\messages\messages.d.ts:2440:     */
+  node_modules\@anthropic-ai\sdk\resources\messages\messages.d.ts:2441:    
+stream: true;
+  node_modules\@anthropic-ai\sdk\resources\messages\messages.d.ts:2442:}
+> node_modules\@anthropic-ai\sdk\resources\messages\messages.d.ts:2443:export 
+type MessageStreamParams = ParseableMessageCreateParams;
+  node_modules\@anthropic-ai\sdk\resources\messages\messages.d.ts:2444:export 
+interface MessageCountTokensParams {
+  node_modules\@anthropic-ai\sdk\resources\messages\messages.d.ts:2445:    /**
+  node_modules\@anthropic-ai\sdk\resources\messages\messages.d.ts:2446:     * 
+Body param: Input messages.
+  node_modules\@anthropic-ai\sdk\resources\messages\messages.d.ts:2447:     *
+  node_modules\@anthropic-ai\sdk\resources\messages\messages.d.ts:2448:     * 
+Our models are trained to operate on alternating `user` and `assistant`
+  node_modules\@anthropic-ai\sdk\resources\messages\messages.d.ts:2449:     * 
+conversational turns. When creating a new `Message`, you specify the prior
+  node_modules\@anthropic-ai\sdk\resources\messages\messages.d.ts:2450:     * 
+conversational turns with the `messages` parameter, and the model then 
+generates
+  node_modules\@anthropic-ai\sdk\resources\messages\messages.d.ts:2451:     * 
+the next `Message` in the conversation. Consecutive `user` or `assistant` turns
+  node_modules\@anthropic-ai\sdk\resources\messages\messages.d.ts:2452:     * 
+in your request will be combined into a single turn.
+  node_modules\@anthropic-ai\sdk\resources\messages\messages.d.ts:2453:     *
+  node_modules\@anthropic-ai\sdk\resources\messages\messages.d.ts:2520:    
+model: Model;
+  node_modules\@anthropic-ai\sdk\resources\messages\messages.d.ts:2521:    /**
+  node_modules\@anthropic-ai\sdk\resources\messages\messages.d.ts:2522:     * 
+Body param: Top-level cache control automatically applies a cache_control 
+marker
+  node_modules\@anthropic-ai\sdk\resources\messages\messages.d.ts:2523:     * 
+to the last cacheable block in the request.
+  node_modules\@anthropic-ai\sdk\resources\messages\messages.d.ts:2524:     */
+  node_modules\@anthropic-ai\sdk\resources\messages\messages.d.ts:2525:    
+cache_control?: CacheControlEphemeral | null;
+  node_modules\@anthropic-ai\sdk\resources\messages\messages.d.ts:2526:    /**
+  node_modules\@anthropic-ai\sdk\resources\messages\messages.d.ts:2527:     * 
+Body param: Configuration options for the model's output, such as the output
+  node_modules\@anthropic-ai\sdk\resources\messages\messages.d.ts:2528:     * 
+format.
+  node_modules\@anthropic-ai\sdk\resources\messages\messages.d.ts:2529:     */
+> node_modules\@anthropic-ai\sdk\resources\messages\messages.d.ts:2530:    
+output_config?: OutputConfig;
+  node_modules\@anthropic-ai\sdk\resources\messages\messages.d.ts:2531:    /**
+  node_modules\@anthropic-ai\sdk\resources\messages\messages.d.ts:2532:     * 
+Body param: System prompt.
+  node_modules\@anthropic-ai\sdk\resources\messages\messages.d.ts:2533:     *
+  node_modules\@anthropic-ai\sdk\resources\messages\messages.d.ts:2534:     * 
+A system prompt is a way of providing context and instructions to Claude, such
+  node_modules\@anthropic-ai\sdk\resources\messages\messages.d.ts:2535:     * 
+as specifying a particular goal or role. See our
+  node_modules\@anthropic-ai\sdk\resources\messages\messages.d.ts:2536:     * 
+[guide to system prompts](https://platform.claude.com/docs/en/build-with-claude
+/prompt-engineering/claude-prompting-best-practices#give-claude-a-role).
+  node_modules\@anthropic-ai\sdk\resources\messages\messages.d.ts:2537:     */
+  node_modules\@anthropic-ai\sdk\resources\messages\messages.d.ts:2538:    
+system?: string | Array<TextBlockParam>;
+  node_modules\@anthropic-ai\sdk\resources\messages\messages.d.ts:2539:    /**
+  node_modules\@anthropic-ai\sdk\resources\messages\messages.d.ts:2540:     * 
+Body param: Configuration for enabling Claude's extended thinking.
+  node_modules\@anthropic-ai\sdk\resources\messages\messages.d.ts:2634:     */
+  node_modules\@anthropic-ai\sdk\resources\messages\messages.d.ts:2635:    
+tools?: Array<MessageCountTokensTool>;
+  node_modules\@anthropic-ai\sdk\resources\messages\messages.d.ts:2636:    /**
+  node_modules\@anthropic-ai\sdk\resources\messages\messages.d.ts:2637:     * 
+Header param: The user profile ID to attribute this request to. Use when acting
+  node_modules\@anthropic-ai\sdk\resources\messages\messages.d.ts:2638:     * 
+on behalf of a party other than your organization. Requires the `user-profiles`
+  node_modules\@anthropic-ai\sdk\resources\messages\messages.d.ts:2639:     * 
+beta header.
+  node_modules\@anthropic-ai\sdk\resources\messages\messages.d.ts:2640:     */
+  node_modules\@anthropic-ai\sdk\resources\messages\messages.d.ts:2641:    
+user_profile_id?: string;
+  node_modules\@anthropic-ai\sdk\resources\messages\messages.d.ts:2642:}
+  node_modules\@anthropic-ai\sdk\resources\messages\messages.d.ts:2643:export 
+declare namespace Messages {
+> node_modules\@anthropic-ai\sdk\resources\messages\messages.d.ts:2644:    
+export { type Base64ImageSource as Base64ImageSource, type Base64PDFSource as 
+Base64PDFSource, type BashCodeExecutionOutputBlock as 
+BashCodeExecutionOutputBlock, type BashCodeExecutionOutputBlockParam as 
+BashCodeExecutionOutputBlockParam, type BashCodeExecutionResultBlock as 
+BashCodeExecutionResultBlock, type BashCodeExecutionResultBlockParam as 
+BashCodeExecutionResultBlockParam, type BashCodeExecutionToolResultBlock as 
+BashCodeExecutionToolResultBlock, type BashCodeExecutionToolResultBlockParam 
+as BashCodeExecutionToolResultBlockParam, type 
+BashCodeExecutionToolResultError as BashCodeExecutionToolResultError, type 
+BashCodeExecutionToolResultErrorCode as BashCodeExecutionToolResultErrorCode, 
+type BashCodeExecutionToolResultErrorParam as 
+BashCodeExecutionToolResultErrorParam, type CacheControlEphemeral as 
+CacheControlEphemeral, type CacheCreation as CacheCreation, type 
+CitationCharLocation as CitationCharLocation, type CitationCharLocationParam 
+as CitationCharLocationParam, type CitationContentBlockLocation as 
+CitationContentBlockLocation, type CitationContentBlockLocationParam as 
+CitationContentBlockLocationParam, type CitationPageLocation as 
+CitationPageLocation, type CitationPageLocationParam as 
+CitationPageLocationParam, type CitationSearchResultLocationParam as 
+CitationSearchResultLocationParam, type CitationWebSearchResultLocationParam 
+as CitationWebSearchResultLocationParam, type CitationsConfig as 
+CitationsConfig, type CitationsConfigParam as CitationsConfigParam, type 
+CitationsDelta as CitationsDelta, type CitationsSearchResultLocation as 
+CitationsSearchResultLocation, type CitationsWebSearchResultLocation as 
+CitationsWebSearchResultLocation, type CodeExecutionOutputBlock as 
+CodeExecutionOutputBlock, type CodeExecutionOutputBlockParam as 
+CodeExecutionOutputBlockParam, type CodeExecutionResultBlock as 
+CodeExecutionResultBlock, type CodeExecutionResultBlockParam as 
+CodeExecutionResultBlockParam, type CodeExecutionTool20250522 as 
+CodeExecutionTool20250522, type CodeExecutionTool20250825 as 
+CodeExecutionTool20250825, type CodeExecutionTool20260120 as 
+CodeExecutionTool20260120, type CodeExecutionTool20260521 as 
+CodeExecutionTool20260521, type CodeExecutionToolResultBlock as 
+CodeExecutionToolResultBlock, type CodeExecutionToolResultBlockContent as 
+CodeExecutionToolResultBlockContent, type CodeExecutionToolResultBlockParam as 
+CodeExecutionToolResultBlockParam, type 
+CodeExecutionToolResultBlockParamContent as 
+CodeExecutionToolResultBlockParamContent, type CodeExecutionToolResultError as 
+CodeExecutionToolResultError, type CodeExecutionToolResultErrorCode as 
+CodeExecutionToolResultErrorCode, type CodeExecutionToolResultErrorParam as 
+CodeExecutionToolResultErrorParam, type Container as Container, type 
+ContainerUploadBlock as ContainerUploadBlock, type ContainerUploadBlockParam 
+as ContainerUploadBlockParam, type ContentBlock as ContentBlock, type 
+ContentBlockParam as ContentBlockParam, type ContentBlockStartEvent as 
+ContentBlockStartEvent, type ContentBlockStopEvent as ContentBlockStopEvent, 
+type ContentBlockSource as ContentBlockSource, type ContentBlockSourceContent 
+as ContentBlockSourceContent, type DirectCaller as DirectCaller, type 
+DocumentBlock as DocumentBlock, type DocumentBlockParam as DocumentBlockParam, 
+type EncryptedCodeExecutionResultBlock as EncryptedCodeExecutionResultBlock, 
+type EncryptedCodeExecutionResultBlockParam as 
+EncryptedCodeExecutionResultBlockParam, type ImageBlockParam as 
+ImageBlockParam, type InputJSONDelta as InputJSONDelta, type JSONOutputFormat 
+as JSONOutputFormat, type MemoryTool20250818 as MemoryTool20250818, type 
+Message as Message, type MessageCountTokensTool as MessageCountTokensTool, 
+type MessageDeltaEvent as MessageDeltaEvent, type MessageDeltaUsage as 
+MessageDeltaUsage, type MessageParam as MessageParam, type MessageTokensCount 
+as MessageTokensCount, type Metadata as Metadata, type 
+MidConversationSystemBlockParam as MidConversationSystemBlockParam, type Model 
+as Model, type OutputConfig as OutputConfig, type OutputTokensDetails as 
+OutputTokensDetails, type PlainTextSource as PlainTextSource, type 
+RawContentBlockDelta as RawContentBlockDelta, type RawContentBlockDeltaEvent 
+as RawContentBlockDeltaEvent, type RawContentBlockStartEvent as 
+RawContentBlockStartEvent, type RawContentBlockStopEvent as 
+RawContentBlockStopEvent, type RawMessageDeltaEvent as RawMessageDeltaEvent, 
+type RawMessageStartEvent as RawMessageStartEvent, type RawMessageStopEvent as 
+RawMessageStopEvent, type RawMessageStreamEvent as RawMessageStreamEvent, type 
+RedactedThinkingBlock as RedactedThinkingBlock, type 
+RedactedThinkingBlockParam as RedactedThinkingBlockParam, type 
+RefusalStopDetails as RefusalStopDetails, type SearchResultBlockParam as 
+SearchResultBlockParam, type ServerToolCaller as ServerToolCaller, type 
+ServerToolCaller20260120 as ServerToolCaller20260120, type ServerToolUsage as 
+ServerToolUsage, type ServerToolUseBlock as ServerToolUseBlock, type 
+ServerToolUseBlockParam as ServerToolUseBlockParam, type SignatureDelta as 
+SignatureDelta, type StopReason as StopReason, type TextBlock as TextBlock, 
+type TextBlockParam as TextBlockParam, type TextCitation as TextCitation, type 
+TextCitationParam as TextCitationParam, type TextDelta as TextDelta, type 
+TextEditorCodeExecutionCreateResultBlock as 
+TextEditorCodeExecutionCreateResultBlock, type 
+TextEditorCodeExecutionCreateResultBlockParam as 
+TextEditorCodeExecutionCreateResultBlockParam, type 
+TextEditorCodeExecutionStrReplaceResultBlock as 
+TextEditorCodeExecutionStrReplaceResultBlock, type 
+TextEditorCodeExecutionStrReplaceResultBlockParam as 
+TextEditorCodeExecutionStrReplaceResultBlockParam, type 
+TextEditorCodeExecutionToolResultBlock as 
+TextEditorCodeExecutionToolResultBlock, type 
+TextEditorCodeExecutionToolResultBlockParam as 
+TextEditorCodeExecutionToolResultBlockParam, type 
+TextEditorCodeExecutionToolResultError as 
+TextEditorCodeExecutionToolResultError, type 
+TextEditorCodeExecutionToolResultErrorCode as 
+TextEditorCodeExecutionToolResultErrorCode, type 
+TextEditorCodeExecutionToolResultErrorParam as 
+TextEditorCodeExecutionToolResultErrorParam, type 
+TextEditorCodeExecutionViewResultBlock as 
+TextEditorCodeExecutionViewResultBlock, type 
+TextEditorCodeExecutionViewResultBlockParam as 
+TextEditorCodeExecutionViewResultBlockParam, type ThinkingBlock as 
+ThinkingBlock, type ThinkingBlockParam as ThinkingBlockParam, type 
+ThinkingConfigAdaptive as ThinkingConfigAdaptive, type ThinkingConfigDisabled 
+as ThinkingConfigDisabled, type ThinkingConfigEnabled as 
+ThinkingConfigEnabled, type ThinkingConfigParam as ThinkingConfigParam, type 
+ThinkingDelta as ThinkingDelta, type Tool as Tool, type ToolBash20250124 as 
+ToolBash20250124, type ToolChoice as ToolChoice, type ToolChoiceAny as 
+ToolChoiceAny, type ToolChoiceAuto as ToolChoiceAuto, type ToolChoiceNone as 
+ToolChoiceNone, type ToolChoiceTool as ToolChoiceTool, type ToolReferenceBlock 
+as ToolReferenceBlock, type ToolReferenceBlockParam as 
+ToolReferenceBlockParam, type ToolResultBlockParam as ToolResultBlockParam, 
+type ToolSearchToolBm25_20251119 as ToolSearchToolBm25_20251119, type 
+ToolSearchToolRegex20251119 as ToolSearchToolRegex20251119, type 
+ToolSearchToolResultBlock as ToolSearchToolResultBlock, type 
+ToolSearchToolResultBlockParam as ToolSearchToolResultBlockParam, type 
+ToolSearchToolResultError as ToolSearchToolResultError, type 
+ToolSearchToolResultErrorCode as ToolSearchToolResultErrorCode, type 
+ToolSearchToolResultErrorParam as ToolSearchToolResultErrorParam, type 
+ToolSearchToolSearchResultBlock as ToolSearchToolSearchResultBlock, type 
+ToolSearchToolSearchResultBlockParam as ToolSearchToolSearchResultBlockParam, 
+type ToolTextEditor20250124 as ToolTextEditor20250124, type 
+ToolTextEditor20250429 as ToolTextEditor20250429, type ToolTextEditor20250728 
+as ToolTextEditor20250728, type ToolUnion as ToolUnion, type ToolUseBlock as 
+ToolUseBlock, type ToolUseBlockParam as ToolUseBlockParam, type URLImageSource 
+as URLImageSource, type URLPDFSource as URLPDFSource, type Usage as Usage, 
+type UserLocation as UserLocation, type WebFetchBlock as WebFetchBlock, type 
+WebFetchBlockParam as WebFetchBlockParam, type WebFetchTool20250910 as 
+WebFetchTool20250910, type WebFetchTool20260209 as WebFetchTool20260209, type 
+WebFetchTool20260309 as WebFetchTool20260309, type WebFetchTool20260318 as 
+WebFetchTool20260318, type WebFetchToolResultBlock as WebFetchToolResultBlock, 
+type WebFetchToolResultBlockParam as WebFetchToolResultBlockParam, type 
+WebFetchToolResultErrorBlock as WebFetchToolResultErrorBlock, type 
+WebFetchToolResultErrorBlockParam as WebFetchToolResultErrorBlockParam, type 
+WebFetchToolResultErrorCode as WebFetchToolResultErrorCode, type 
+WebSearchResultBlock as WebSearchResultBlock, type WebSearchResultBlockParam 
+as WebSearchResultBlockParam, type WebSearchTool20250305 as 
+WebSearchTool20250305, type WebSearchTool20260209 as WebSearchTool20260209, 
+type WebSearchTool20260318 as WebSearchTool20260318, type 
+WebSearchToolRequestError as WebSearchToolRequestError, type 
+WebSearchToolResultBlock as WebSearchToolResultBlock, type 
+WebSearchToolResultBlockContent as WebSearchToolResultBlockContent, type 
+WebSearchToolResultBlockParam as WebSearchToolResultBlockParam, type 
+WebSearchToolResultBlockParamContent as WebSearchToolResultBlockParamContent, 
+type WebSearchToolResultError as WebSearchToolResultError, type 
+MessageStreamEvent as MessageStreamEvent, type MessageStartEvent as 
+MessageStartEvent, type MessageStopEvent as MessageStopEvent, type 
+ContentBlockDeltaEvent as ContentBlockDeltaEvent, type MessageCreateParams as 
+MessageCreateParams, type MessageCreateParamsNonStreaming as 
+MessageCreateParamsNonStreaming, type MessageCreateParamsStreaming as 
+MessageCreateParamsStreaming, type MessageStreamParams as MessageStreamParams, 
+type MessageCountTokensParams as MessageCountTokensParams, };
+  node_modules\@anthropic-ai\sdk\resources\messages\messages.d.ts:2645:    
+export { Batches as Batches, type DeletedMessageBatch as DeletedMessageBatch, 
+type MessageBatch as MessageBatch, type MessageBatchCanceledResult as 
+MessageBatchCanceledResult, type MessageBatchErroredResult as 
+MessageBatchErroredResult, type MessageBatchExpiredResult as 
+MessageBatchExpiredResult, type MessageBatchIndividualResponse as 
+MessageBatchIndividualResponse, type MessageBatchRequestCounts as 
+MessageBatchRequestCounts, type MessageBatchResult as MessageBatchResult, type 
+MessageBatchSucceededResult as MessageBatchSucceededResult, type 
+MessageBatchesPage as MessageBatchesPage, type BatchCreateParams as 
+BatchCreateParams, type BatchListParams as BatchListParams, };
+  node_modules\@anthropic-ai\sdk\resources\messages\messages.d.ts:2646:}
+  node_modules\@anthropic-ai\sdk\resources\messages\messages.d.ts:2647://# 
+sourceMappingURL=messages.d.ts.map
+
+

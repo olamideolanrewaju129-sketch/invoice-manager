@@ -1,4 +1,6 @@
-export default function Dashboard() {
+import DashboardSummary from "@/components/DashboardSummary";
+
+export default function DashboardPage() {
   return (
     <div className="space-y-6">
       <div>
@@ -7,6 +9,7 @@ export default function Dashboard() {
           Welcome to your invoice manager. Here you will see a high-level overview of your revenue, pending invoices, and recent activity.
         </p>
       </div>
+      <DashboardSummary />
     </div>
   );
 }
