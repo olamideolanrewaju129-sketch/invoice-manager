@@ -40,6 +40,11 @@ const insightSchema: any = {
 
 const apiKey = process.env.GEMINI_API_KEY;
 const gemini = apiKey ? new GoogleGenerativeAI(apiKey) : null;
+const RETRY_DELAYS_MS = [1000, 2000, 4000];
+
+function wait(ms: number) {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+}
 
 function buildPrompt(invoices: InsightInput[]) {
   return `Analyze the following invoice payment data and return a structured JSON object with the shape { summary, trends, slowestPayingClient, totalOverdueAmount, recommendations }.
@@ -67,6 +72,49 @@ function isValidInsightsResult(value: unknown): value is InsightsResult {
     Array.isArray(candidate.recommendations) &&
     candidate.recommendations.every((recommendation) => typeof recommendation === "string")
   );
+}
+
+async function fetchInsightsWithRetry(invoices: InsightInput[]): Promise<InsightsResult> {
+  let lastError: unknown;
+
+  for (let attempt = 0; attempt <= RETRY_DELAYS_MS.length; attempt += 1) {
+    try {
+      if (!gemini) {
+        throw new Error("Gemini API key is not configured.");
+      }
+
+      const model = gemini.getGenerativeModel({
+        model: "gemini-flash-latest",
+        generationConfig: {
+          responseMimeType: "application/json",
+          responseSchema: insightSchema,
+        },
+      });
+
+      const result = await model.generateContent(buildPrompt(invoices));
+      const responseText = result.response.text().trim();
+      const parsed = JSON.parse(responseText) as unknown;
+
+      if (!isValidInsightsResult(parsed)) {
+        throw new Error("Gemini returned malformed structured data.");
+      }
+
+      return parsed;
+    } catch (error) {
+      lastError = error;
+
+      const message = error instanceof Error ? error.message : "Unknown error.";
+      const isRetryable = /(503|429|timeout|network|fetch|unavailable|temporar)/i.test(message);
+
+      if (attempt >= RETRY_DELAYS_MS.length || !isRetryable) {
+        throw error;
+      }
+
+      await wait(RETRY_DELAYS_MS[attempt]);
+    }
+  }
+
+  throw lastError ?? new Error("Gemini request failed.");
 }
 
 export async function POST(request: Request) {
@@ -107,29 +155,11 @@ export async function POST(request: Request) {
   }
 
   try {
-    if (!gemini) {
-      throw new Error("Gemini API key is not configured.");
-    }
-
-    const model = gemini.getGenerativeModel({
-      model: "gemini-flash-latest",
-      generationConfig: {
-        responseMimeType: "application/json",
-        responseSchema: insightSchema,
-      },
-    });
-
-    const result = await model.generateContent(buildPrompt(invoices));
-    const responseText = result.response.text().trim();
-    const parsed = JSON.parse(responseText) as unknown;
-
-    if (!isValidInsightsResult(parsed)) {
-      throw new Error("Gemini returned malformed structured data.");
-    }
-
+    const parsed = await fetchInsightsWithRetry(invoices);
     return NextResponse.json(parsed);
   } catch (error) {
     const message = error instanceof Error ? error.message : "Unknown error.";
-    return NextResponse.json({ error: `Insights generation failed: ${message}` }, { status: 502 });
+    const status = /(503|timeout|network|fetch|unavailable)/i.test(message) ? 503 : 502;
+    return NextResponse.json({ error: `Insights generation failed: ${message}` }, { status });
   }
 }

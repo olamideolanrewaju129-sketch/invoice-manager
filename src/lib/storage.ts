@@ -222,10 +222,6 @@ export function summarizeInvoices(invoices: Invoice[]) {
     if (invoice.status === "unpaid" || invoice.status === "overdue") {
       summary.outstanding += invoice.amount;
     }
-
-    if (invoice.status === "overdue") {
-      summary.overdueCount += 1;
-    }
   });
 
   return summary;

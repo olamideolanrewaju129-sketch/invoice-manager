@@ -20,6 +20,13 @@ type InsightPayload = {
   daysOverdue: number;
 };
 
+type CachedInsightsEntry = {
+  timestamp: string;
+  data: InsightResponse;
+};
+
+const INSIGHTS_CACHE_KEY = "invoice-manager-insights-cache";
+
 function formatCurrency(value: number) {
   return new Intl.NumberFormat("en-US", {
     style: "currency",
@@ -47,14 +54,75 @@ function buildPayload(invoices: Invoice[]): InsightPayload[] {
   }));
 }
 
+function loadCachedInsights(): CachedInsightsEntry | null {
+  if (typeof window === "undefined") {
+    return null;
+  }
+
+  try {
+    const raw = window.localStorage.getItem(INSIGHTS_CACHE_KEY);
+    if (!raw) {
+      return null;
+    }
+
+    const parsed = JSON.parse(raw) as Partial<CachedInsightsEntry>;
+    if (
+      typeof parsed?.timestamp === "string" &&
+      parsed?.data &&
+      typeof parsed.data.summary === "string" &&
+      Array.isArray(parsed.data.trends) &&
+      typeof parsed.data.totalOverdueAmount === "number" &&
+      Array.isArray(parsed.data.recommendations)
+    ) {
+      return {
+        timestamp: parsed.timestamp,
+        data: parsed.data,
+      };
+    }
+  } catch {
+    return null;
+  }
+
+  return null;
+}
+
+function saveCachedInsights(data: InsightResponse) {
+  if (typeof window === "undefined") {
+    return;
+  }
+
+  const entry: CachedInsightsEntry = {
+    timestamp: new Date().toISOString(),
+    data,
+  };
+
+  window.localStorage.setItem(INSIGHTS_CACHE_KEY, JSON.stringify(entry));
+}
+
+function formatCacheTimestamp(timestamp: string) {
+  const date = new Date(timestamp);
+  if (Number.isNaN(date.getTime())) {
+    return "recently";
+  }
+
+  return date.toLocaleString([], {
+    month: "short",
+    day: "numeric",
+    hour: "numeric",
+    minute: "2-digit",
+  });
+}
+
 export default function InsightsPage() {
   const [insights, setInsights] = useState<InsightResponse | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [cacheNotice, setCacheNotice] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
 
   const fetchInsights = async () => {
     setLoading(true);
     setError(null);
+    setCacheNotice(null);
     setInsights(null);
 
     try {
@@ -81,8 +149,18 @@ export default function InsightsPage() {
         throw new Error("Insights API returned malformed data.");
       }
 
+      saveCachedInsights(data);
       setInsights(data);
     } catch (fetchError) {
+      const cached = loadCachedInsights();
+      if (cached) {
+        setInsights(cached.data);
+        setCacheNotice(
+          `Showing insights from ${formatCacheTimestamp(cached.timestamp)} — refresh failed, tap Retry to try again`,
+        );
+        return;
+      }
+
       setError(fetchError instanceof Error ? fetchError.message : "Unable to load insights.");
     } finally {
       setLoading(false);
@@ -120,58 +198,66 @@ export default function InsightsPage() {
           </button>
         </div>
       ) : insights ? (
-        <div className="grid gap-6 xl:grid-cols-[1.25fr_0.85fr]">
-          <div className="space-y-6">
-            <section className="rounded-3xl border border-slate-200 bg-white p-8 shadow-sm">
-              <h2 className="text-xl font-semibold text-slate-900">Summary</h2>
-              <p className="mt-4 text-slate-600">{insights.summary}</p>
-            </section>
+        <div className="space-y-4">
+          {cacheNotice ? (
+            <div className="rounded-2xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-800 shadow-sm">
+              {cacheNotice}
+            </div>
+          ) : null}
 
-            <section className="rounded-3xl border border-slate-200 bg-white p-8 shadow-sm">
-              <div className="flex items-center justify-between gap-4">
-                <div>
-                  <h2 className="text-xl font-semibold text-slate-900">Trends</h2>
-                  <p className="mt-1 text-sm text-slate-500">Key payment patterns detected in your invoices.</p>
+          <div className="grid gap-6 xl:grid-cols-[1.25fr_0.85fr]">
+            <div className="space-y-6">
+              <section className="rounded-3xl border border-slate-200 bg-white p-8 shadow-sm">
+                <h2 className="text-xl font-semibold text-slate-900">Summary</h2>
+                <p className="mt-4 text-slate-600">{insights.summary}</p>
+              </section>
+
+              <section className="rounded-3xl border border-slate-200 bg-white p-8 shadow-sm">
+                <div className="flex items-center justify-between gap-4">
+                  <div>
+                    <h2 className="text-xl font-semibold text-slate-900">Trends</h2>
+                    <p className="mt-1 text-sm text-slate-500">Key payment patterns detected in your invoices.</p>
+                  </div>
                 </div>
-              </div>
-              <ul className="mt-6 space-y-3 text-sm text-slate-700">
-                {insights.trends.map((trend, index) => (
-                  <li key={index} className="rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3">
-                    {trend}
-                  </li>
-                ))}
-              </ul>
-            </section>
+                <ul className="mt-6 space-y-3 text-sm text-slate-700">
+                  {insights.trends.map((trend, index) => (
+                    <li key={index} className="rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3">
+                      {trend}
+                    </li>
+                  ))}
+                </ul>
+              </section>
 
-            <section className="rounded-3xl border border-slate-200 bg-white p-8 shadow-sm">
-              <h2 className="text-xl font-semibold text-slate-900">Recommendations</h2>
-              <ul className="mt-4 space-y-3 text-sm text-slate-700">
-                {insights.recommendations.map((recommendation, index) => (
-                  <li key={index} className="rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3">
-                    {recommendation}
-                  </li>
-                ))}
-              </ul>
-            </section>
-          </div>
+              <section className="rounded-3xl border border-slate-200 bg-white p-8 shadow-sm">
+                <h2 className="text-xl font-semibold text-slate-900">Recommendations</h2>
+                <ul className="mt-4 space-y-3 text-sm text-slate-700">
+                  {insights.recommendations.map((recommendation, index) => (
+                    <li key={index} className="rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3">
+                      {recommendation}
+                    </li>
+                  ))}
+                </ul>
+              </section>
+            </div>
 
-          <div className="space-y-6">
-            <section className="rounded-3xl border border-slate-200 bg-white p-8 shadow-sm">
-              <h2 className="text-xl font-semibold text-slate-900">Slowest Paying Client</h2>
-              <p className="mt-4 text-slate-600">{insights.slowestPayingClient ?? "No clear slow payer identified."}</p>
-            </section>
+            <div className="space-y-6">
+              <section className="rounded-3xl border border-slate-200 bg-white p-8 shadow-sm">
+                <h2 className="text-xl font-semibold text-slate-900">Slowest Paying Client</h2>
+                <p className="mt-4 text-slate-600">{insights.slowestPayingClient ?? "No clear slow payer identified."}</p>
+              </section>
 
-            <section className="rounded-3xl border border-slate-200 bg-white p-8 shadow-sm">
-              <div className="flex items-center justify-between gap-4">
-                <div>
-                  <h2 className="text-xl font-semibold text-slate-900">Total Overdue Amount</h2>
-                  <p className="mt-1 text-sm text-slate-500">Amount currently overdue across invoices.</p>
+              <section className="rounded-3xl border border-slate-200 bg-white p-8 shadow-sm">
+                <div className="flex items-center justify-between gap-4">
+                  <div>
+                    <h2 className="text-xl font-semibold text-slate-900">Total Overdue Amount</h2>
+                    <p className="mt-1 text-sm text-slate-500">Amount currently overdue across invoices.</p>
+                  </div>
+                  <div className="rounded-2xl bg-slate-100 px-4 py-2 text-sm font-semibold text-slate-900">
+                    {formatCurrency(insights.totalOverdueAmount)}
+                  </div>
                 </div>
-                <div className="rounded-2xl bg-slate-100 px-4 py-2 text-sm font-semibold text-slate-900">
-                  {formatCurrency(insights.totalOverdueAmount)}
-                </div>
-              </div>
-            </section>
+              </section>
+            </div>
           </div>
         </div>
       ) : (

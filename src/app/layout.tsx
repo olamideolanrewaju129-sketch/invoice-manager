@@ -43,7 +43,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             <SecondarySidebarNav />
           </div>
         </aside>
-        <main id="main-content" className="flex-1 p-8 md:p-12 overflow-y-auto max-w-7xl w-full" tabIndex={-1}>
+        <main id="main-content" className="flex-1 p-8 md:p-12 overflow-y-auto max-w-7xl w-full" tabIndex={0}>
           {children}
         </main>
       </body>
